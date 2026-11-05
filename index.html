@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Хирургиядағы мейіргер ісі - Тест</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: #e0e0e0;
+    }
+    .container { max-width: 860px; margin: 0 auto; padding: 20px; }
+
+    /* START SCREEN */
+    #start-screen {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100vh; text-align: center; padding: 30px;
+    }
+    .logo { font-size: 60px; margin-bottom: 20px; }
+    .start-title { font-size: 26px; font-weight: 700; color: #64b5f6; margin-bottom: 10px; line-height: 1.4; }
+    .start-subtitle { font-size: 15px; color: #90caf9; margin-bottom: 30px; line-height: 1.6; }
+    .start-info {
+      background: rgba(100,181,246,0.1); border: 1px solid rgba(100,181,246,0.3);
+      border-radius: 12px; padding: 20px 30px; margin-bottom: 30px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 400px;
+    }
+    .info-item { text-align: center; }
+    .info-num { font-size: 28px; font-weight: 700; color: #64b5f6; }
+    .info-label { font-size: 12px; color: #90a4ae; margin-top: 4px; }
+    .name-input-wrap { margin-bottom: 20px; width: 100%; max-width: 400px; }
+    .name-input-wrap label { display: block; margin-bottom: 8px; color: #90caf9; font-size: 14px; }
+    .name-input-wrap input {
+      width: 100%; padding: 12px 16px; border-radius: 8px;
+      border: 2px solid rgba(100,181,246,0.3); background: rgba(255,255,255,0.05);
+      color: #fff; font-size: 16px; outline: none; transition: border-color 0.3s;
+    }
+    .name-input-wrap input:focus { border-color: #64b5f6; }
+    .count-select-wrap { margin-bottom: 24px; width: 100%; max-width: 400px; }
+    .count-select-wrap label { display: block; margin-bottom: 8px; color: #90caf9; font-size: 14px; }
+    .count-select-wrap select {
+      width: 100%; padding: 12px 16px; border-radius: 8px;
+      border: 2px solid rgba(100,181,246,0.3); background: rgba(15,52,96,0.9);
+      color: #fff; font-size: 16px; outline: none; cursor: pointer;
+    }
+    .btn-start {
+      padding: 15px 50px; font-size: 18px; font-weight: 700;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      color: white; border: none; border-radius: 50px; cursor: pointer;
+      transition: all 0.3s; box-shadow: 0 4px 20px rgba(66,165,245,0.4);
+    }
+    .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(66,165,245,0.6); }
+
+    /* QUIZ SCREEN */
+    #quiz-screen { display: none; padding: 20px 0; }
+    .header-bar {
+      background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px 24px;
+      margin-bottom: 20px; display: flex; align-items: center;
+      justify-content: space-between; border: 1px solid rgba(255,255,255,0.1);
+    }
+    .header-info { font-size: 14px; color: #90caf9; }
+    .header-info span { font-weight: 700; color: #64b5f6; }
+    .progress-wrap { flex: 1; margin: 0 20px; }
+    .progress-bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 8px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #1976d2, #42a5f5); border-radius: 10px; transition: width 0.4s ease; }
+    .progress-label { text-align: center; font-size: 11px; color: #90a4ae; margin-top: 4px; }
+    .question-card {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px; padding: 32px; margin-bottom: 20px;
+    }
+    .question-num { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #42a5f5; margin-bottom: 12px; }
+    .question-text { font-size: 18px; line-height: 1.7; color: #e3f2fd; font-weight: 500; }
+    .answers-list { display: flex; flex-direction: column; gap: 12px; }
+    .answer-btn {
+      display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px;
+      background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 14px; cursor: pointer; transition: all 0.25s; text-align: left;
+      color: #cfd8dc; font-size: 15px; line-height: 1.5; width: 100%;
+    }
+    .answer-btn:hover:not(:disabled) {
+      background: rgba(100,181,246,0.12); border-color: rgba(100,181,246,0.4);
+      color: #e3f2fd; transform: translateX(4px);
+    }
+    .answer-btn .letter {
+      min-width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;
+    }
+    .answer-btn.correct { background: rgba(76,175,80,0.2); border-color: #4caf50; color: #a5d6a7; }
+    .answer-btn.correct .letter { background: #4caf50; color: white; }
+    .answer-btn.wrong { background: rgba(244,67,54,0.15); border-color: #f44336; color: #ef9a9a; }
+    .answer-btn.wrong .letter { background: #f44336; color: white; }
+    .answer-btn:disabled { cursor: default; }
+    .feedback-box { margin-top: 16px; padding: 14px 18px; border-radius: 12px; font-size: 14px; display: none; }
+    .feedback-box.correct { background: rgba(76,175,80,0.15); border: 1px solid #4caf50; color: #a5d6a7; }
+    .feedback-box.wrong { background: rgba(244,67,54,0.12); border: 1px solid #f44336; color: #ef9a9a; }
+    .nav-buttons { display: flex; justify-content: space-between; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    .btn-nav {
+      padding: 12px 28px; border-radius: 50px; border: 2px solid rgba(100,181,246,0.4);
+      background: rgba(100,181,246,0.1); color: #64b5f6; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+    }
+    .btn-nav:hover:not(:disabled) { background: rgba(100,181,246,0.25); border-color: #64b5f6; }
+    .btn-nav:disabled { opacity: 0.3; cursor: default; }
+    .btn-finish {
+      padding: 12px 28px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #e53935, #ef5350); color: white;
+      font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+    }
+    .btn-finish:hover { box-shadow: 0 4px 15px rgba(229,57,53,0.5); }
+
+    /* RESULT SCREEN */
+    #result-screen { display: none; text-align: center; padding: 30px 0; }
+    .result-card {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px; padding: 50px 40px; margin-bottom: 24px;
+    }
+    .result-emoji { font-size: 70px; margin-bottom: 16px; }
+    .result-name { font-size: 15px; color: #90caf9; margin-bottom: 8px; }
+    .result-score-wrap { margin: 24px 0; }
+    .result-score { font-size: 72px; font-weight: 900; line-height: 1; }
+    .result-score.excellent { color: #4caf50; }
+    .result-score.good { color: #64b5f6; }
+    .result-score.ok { color: #ffb74d; }
+    .result-score.poor { color: #ef5350; }
+    .result-fraction { font-size: 18px; color: #90a4ae; margin-top: 6px; }
+    .result-label { font-size: 22px; font-weight: 600; margin: 10px 0 6px; }
+    .result-label.excellent { color: #4caf50; }
+    .result-label.good { color: #64b5f6; }
+    .result-label.ok { color: #ffb74d; }
+    .result-label.poor { color: #ef5350; }
+    .result-desc { font-size: 14px; color: #90a4ae; margin-bottom: 20px; }
+    .result-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 24px 0; }
+    .stat-box { background: rgba(255,255,255,0.05); border-radius: 14px; padding: 18px 10px; }
+    .stat-num { font-size: 26px; font-weight: 700; }
+    .stat-num.green { color: #4caf50; }
+    .stat-num.red { color: #ef5350; }
+    .stat-num.blue { color: #64b5f6; }
+    .stat-label { font-size: 11px; color: #78909c; margin-top: 4px; }
+    .btn-restart {
+      padding: 15px 50px; font-size: 17px; font-weight: 700;
+      background: linear-gradient(135deg, #1976d2, #42a5f5); color: white;
+      border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(66,165,245,0.4);
+    }
+    .btn-restart:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(66,165,245,0.6); }
+    .review-section { margin-top: 24px; text-align: left; }
+    .review-title { font-size: 18px; font-weight: 600; color: #90caf9; margin-bottom: 16px; }
+    .review-item {
+      background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px 20px;
+      margin-bottom: 10px; border-left: 4px solid;
+    }
+    .review-item.correct { border-color: #4caf50; }
+    .review-item.wrong { border-color: #f44336; }
+    .review-q { font-size: 14px; color: #cfd8dc; margin-bottom: 6px; }
+    .review-your { font-size: 13px; }
+    .review-your.wrong { color: #ef9a9a; }
+    .review-correct-ans { font-size: 13px; color: #a5d6a7; margin-top: 2px; }
+    @media(max-width:600px){
+      .result-stats { grid-template-columns: 1fr; }
+      .question-text { font-size: 15px; }
+      .question-card { padding: 20px; }
+      .header-bar { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="start-screen">
+  <div class="logo">🏥</div>
+  <div class="start-title">
+    Хирургиядағы мейіргер ісі<br>
+    <small style="font-size:0.65em;color:#90caf9">(Офтальмология және оториноларингология курсымен)</small>
+  </div>
+  <div class="start-subtitle">Аралық аттестаттау емтиханы — тест тапсырмалары<br>Мамандық: 09130100 «Мейіргер ісі»</div>
+  <div class="start-info">
+    <div class="info-item">
+      <div class="info-num">277</div>
+      <div class="info-label">Барлық сұрақ</div>
+    </div>
+    <div class="info-item">
+      <div class="info-num">5</div>
+      <div class="info-label">Нұсқа саны</div>
+    </div>
+  </div>
+  <div class="name-input-wrap">
+    <label for="student-name">Студенттің аты-жөні:</label>
+    <input type="text" id="student-name" placeholder="Аты-жөніңізді енгізіңіз..." />
+  </div>
+  <div class="count-select-wrap">
+    <label for="q-count">Сұрақ санын таңдаңыз:</label>
+    <select id="q-count">
+      <option value="10">10 сұрақ (жаттығу)</option>
+      <option value="20">20 сұрақ</option>
+      <option value="30">30 сұрақ</option>
+      <option value="50">50 сұрақ</option>
+      <option value="100">100 сұрақ</option>
+      <option value="277">277 сұрақ (толық тест)</option>
+    </select>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">Тестті бастау &#9654;</button>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen">
+  <div class="container">
+    <div class="header-bar">
+      <div class="header-info">&#128100; <span id="student-display"></span></div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-label" id="progress-label"></div>
+      </div>
+      <div class="header-info">&#10003; <span id="score-display">0</span> дұрыс</div>
+    </div>
+    <div class="question-card">
+      <div class="question-num" id="q-num"></div>
+      <div class="question-text" id="q-text"></div>
+    </div>
+    <div class="answers-list" id="answers-list"></div>
+    <div class="feedback-box" id="feedback-box"></div>
+    <div class="nav-buttons">
+      <button class="btn-nav" id="btn-prev" onclick="prevQuestion()" disabled>&#9664; Алдыңғы</button>
+      <button class="btn-nav" id="btn-next" onclick="nextQuestion()" disabled>Келесі &#9654;</button>
+      <button class="btn-finish" onclick="finishQuiz()">Тестті аяқтау &#127937;</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="result-screen">
+  <div class="container">
+    <div class="result-card">
+      <div class="result-emoji" id="result-emoji"></div>
+      <div class="result-name" id="result-name"></div>
+      <div class="result-score-wrap">
+        <div class="result-score" id="result-score"></div>
+        <div class="result-fraction" id="result-fraction"></div>
+      </div>
+      <div class="result-label" id="result-label"></div>
+      <div class="result-desc" id="result-desc"></div>
+      <div class="result-stats">
+        <div class="stat-box">
+          <div class="stat-num green" id="stat-correct"></div>
+          <div class="stat-label">Дұрыс жауап</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num red" id="stat-wrong"></div>
+          <div class="stat-label">Қате жауап</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num blue" id="stat-pct"></div>
+          <div class="stat-label">Пайыз</div>
+        </div>
+      </div>
+      <button class="btn-restart" onclick="restartQuiz()">Қайтадан тапсыру</button>
+    </div>
+    <div class="review-section">
+      <div class="review-title">Жауаптар шолуы (тек қателер):</div>
+      <div id="review-list"></div>
+    </div>
+  </div>
+</div>
+
+<script src="quiz_data.js"></script>
+<script>
+var quizQuestions = [];
+var currentIndex = 0;
+var userAnswers = [];
+var answered = [];
+var studentName = '';
+var score = 0;
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for(var i = a.length-1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i+1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function startQuiz() {
+  studentName = document.getElementById('student-name').value.trim() || 'Студент';
+  var count = parseInt(document.getElementById('q-count').value);
+
+  var shuffled = shuffle(ALL_QUESTIONS);
+  var selected = shuffled.slice(0, count);
+
+  quizQuestions = selected.map(function(q) {
+    var correctAnswer = q.answers[0];
+    var shuffledAnswers = shuffle(q.answers);
+    var correctIdx = shuffledAnswers.indexOf(correctAnswer);
+    return {
+      num: q.num,
+      question: q.question,
+      shuffledAnswers: shuffledAnswers,
+      correctIdx: correctIdx
+    };
+  });
+
+  currentIndex = 0;
+  score = 0;
+  userAnswers = new Array(quizQuestions.length).fill(null);
+  answered = new Array(quizQuestions.length).fill(false);
+
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('student-display').textContent = studentName;
+  renderQuestion();
+  window.scrollTo(0,0);
+}
+
+function renderQuestion() {
+  var q = quizQuestions[currentIndex];
+  var total = quizQuestions.length;
+  var pct = Math.round((currentIndex+1)/total*100);
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = (currentIndex+1) + ' / ' + total;
+  document.getElementById('score-display').textContent = score;
+  document.getElementById('q-num').textContent = 'Сұрақ ' + (currentIndex+1) + ' / ' + total;
+  document.getElementById('q-text').textContent = q.question;
+
+  var list = document.getElementById('answers-list');
+  list.innerHTML = '';
+  var letters = ['\u0410', '\u04d8', '\u0411', '\u0412', '\u0413'];
+
+  q.shuffledAnswers.forEach(function(ans, i) {
+    var btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = '<span class="letter">' + (letters[i] || (i+1)) + '</span><span>' + ans + '</span>';
+    (function(idx) {
+      btn.onclick = function() { selectAnswer(idx); };
+    })(i);
+
+    if (answered[currentIndex]) {
+      btn.disabled = true;
+      if (i === q.correctIdx) btn.classList.add('correct');
+      else if (i === userAnswers[currentIndex]) btn.classList.add('wrong');
+    }
+    list.appendChild(btn);
+  });
+
+  var fb = document.getElementById('feedback-box');
+  if (answered[currentIndex]) {
+    fb.style.display = 'block';
+    if (userAnswers[currentIndex] === q.correctIdx) {
+      fb.className = 'feedback-box correct';
+      fb.textContent = 'Дұрыс! Жарайсыз!';
+    } else {
+      fb.className = 'feedback-box wrong';
+      fb.textContent = 'Қате. Дұрыс жауап: ' + q.shuffledAnswers[q.correctIdx];
+    }
+  } else {
+    fb.style.display = 'none';
+  }
+
+  document.getElementById('btn-prev').disabled = (currentIndex === 0);
+  document.getElementById('btn-next').disabled = !answered[currentIndex] || (currentIndex === total-1);
+}
+
+function selectAnswer(idx) {
+  if (answered[currentIndex]) return;
+  var q = quizQuestions[currentIndex];
+  answered[currentIndex] = true;
+  userAnswers[currentIndex] = idx;
+  if (idx === q.correctIdx) score++;
+  renderQuestion();
+}
+
+function nextQuestion() {
+  if (!answered[currentIndex]) return;
+  if (currentIndex < quizQuestions.length - 1) {
+    currentIndex++;
+    renderQuestion();
+    window.scrollTo(0,0);
+  }
+}
+
+function prevQuestion() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderQuestion();
+    window.scrollTo(0,0);
+  }
+}
+
+function finishQuiz() {
+  var total = quizQuestions.length;
+  var answeredCount = answered.filter(Boolean).length;
+  if (answeredCount < total) {
+    if (!confirm('Барлық сұраққа жауап бермедіңіз (' + (total-answeredCount) + ' сұрақ қалды). Тестті аяқтайсыз ба?')) return;
+  }
+
+  var pct = Math.round(score/total*100);
+  var emoji, label, labelClass, desc;
+  if (pct >= 90) {
+    emoji = '\uD83C\uDFC6'; label = 'Өте жақсы!'; labelClass = 'excellent';
+    desc = 'Керемет нәтиже! Материалды тамаша меңгергенсіз.';
+  } else if (pct >= 75) {
+    emoji = '\uD83D\uDC4D'; label = 'Жақсы!'; labelClass = 'good';
+    desc = 'Жақсы нәтиже! Бірнеше тақырыпты қайталаңыз.';
+  } else if (pct >= 60) {
+    emoji = '\uD83D\uDCDA'; label = 'Қанағаттанарлық'; labelClass = 'ok';
+    desc = 'Орташа нәтиже. Материалды тереңірек оқуды ұсынамыз.';
+  } else {
+    emoji = '\uD83D\uDCD6'; label = 'Жеткіліксіз'; labelClass = 'poor';
+    desc = 'Материалды қайтадан оқып, тестті қайта тапсырыңыз.';
+  }
+
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-name').textContent = 'Студент: ' + studentName;
+
+  var scoreEl = document.getElementById('result-score');
+  scoreEl.textContent = pct + '%';
+  scoreEl.className = 'result-score ' + labelClass;
+
+  document.getElementById('result-fraction').textContent = score + ' / ' + total + ' дұрыс жауап';
+
+  var labelEl = document.getElementById('result-label');
+  labelEl.textContent = label;
+  labelEl.className = 'result-label ' + labelClass;
+
+  document.getElementById('result-desc').textContent = desc;
+  document.getElementById('stat-correct').textContent = score;
+  document.getElementById('stat-wrong').textContent = total - score;
+  document.getElementById('stat-pct').textContent = pct + '%';
+
+  var reviewList = document.getElementById('review-list');
+  reviewList.innerHTML = '';
+  var wrongCount = 0;
+
+  for (var i = 0; i < quizQuestions.length; i++) {
+    var q = quizQuestions[i];
+    if (!answered[i] || userAnswers[i] === q.correctIdx) continue;
+    wrongCount++;
+    if (wrongCount > 30) continue;
+    var div = document.createElement('div');
+    div.className = 'review-item wrong';
+    var yourAnswer = (userAnswers[i] !== null) ? q.shuffledAnswers[userAnswers[i]] : '(жауап берілмеді)';
+    div.innerHTML = '<div class="review-q"><strong>' + (i+1) + '.</strong> ' + q.question + '</div>' +
+      '<div class="review-your wrong">Сіздің жауабыңыз: ' + yourAnswer + '</div>' +
+      '<div class="review-correct-ans">Дұрыс жауап: ' + q.shuffledAnswers[q.correctIdx] + '</div>';
+    reviewList.appendChild(div);
+  }
+
+  if (wrongCount === 0) {
+    reviewList.innerHTML = '<div style="color:#4caf50;padding:20px;text-align:center;">Барлық сұраққа дұрыс жауап бердіңіз!</div>';
+  } else if (wrongCount > 30) {
+    reviewList.innerHTML += '<div style="color:#90a4ae;padding:10px;text-align:center;">...және тағы ' + (wrongCount-30) + ' қате</div>';
+  }
+
+  window.scrollTo(0,0);
+}
+
+function restartQuiz() {
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('start-screen').style.display = 'flex';
+}
+</script>
+</body>
+</html>
